@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CallAnalysisService": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\mikex\\source\\repos\\CallAnalysisService\\CallAnalysisService"
+    }
+  }
+}
