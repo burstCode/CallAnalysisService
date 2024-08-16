@@ -17,6 +17,10 @@ namespace CallAnalysisHelper.Models
 
         public string Client_PhoneNumbers { get; set; }
 
+        public string Client_INN { get; set; }
+
+        public string Client_OGRN { get; set; }
+
         [NotMapped]
         public List<string> PhoneNumberList
         {

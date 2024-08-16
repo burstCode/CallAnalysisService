@@ -13,10 +13,16 @@ namespace CallAnalysisHelper.Models
         public string Call_ClientPhoneNumber { get; set; }
         
         public string Call_SupportAgentName { get; set; }
+
+        public string Call_ThroughPhoneNumber { get; set; }
         
-        public DateTime Call_CallDate { get; set; }
-        public DateTime Call_CallTime { get; set; }
-        public TimeSpan Call_CallDuration { get; set; }
+        public DateTime Call_Date { get; set; }
+
+        public DateTime Call_Time { get; set; }
+
+        public TimeSpan Call_WaitingTime { get; set; }
+
+        public TimeSpan Call_Duration { get; set; }
     }
 
 }
