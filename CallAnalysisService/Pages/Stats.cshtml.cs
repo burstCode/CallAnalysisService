@@ -14,10 +14,10 @@ namespace CallAnalysisWeb.Pages.Stats
         public List<ClientCallCount> ClientsWithMostCalls { get; set; }
         public int AcceptedCallsCount { get; set; }
         public int MissedCallsCount { get; set; }
-        public List<SupportAgentLoad> AgentLoad { get; set; }
+        public List<SupportAgentLoad> SupportAgentLoad { get; set; }
 
         // Пока что пришлось явно указать, так как видит такой же класс в страницах разор
-        public List<CallAnalysisHelper.Models.Statistics.ClientWithoutCalls> ClientsWithoutCalls { get; set; }
+        public List<ClientWithoutCalls> ClientsWithoutCalls { get; set; }
 
         public StatsModel(CallAnalyticsService analyticsService)
         {
@@ -30,7 +30,7 @@ namespace CallAnalysisWeb.Pages.Stats
             ClientsWithMostCalls = _analyticsService.GetClientsWithMostCalls();
             AcceptedCallsCount = _analyticsService.GetAcceptedCallsCount();
             MissedCallsCount = _analyticsService.GetMissedCallsCount();
-            AgentLoad = _analyticsService.GetSupportAgentLoad();
+            SupportAgentLoad = _analyticsService.GetSupportAgentLoad();
             ClientsWithoutCalls = _analyticsService.GetClientsWithoutCalls();
         }
     }

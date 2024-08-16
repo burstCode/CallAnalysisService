@@ -1,77 +1,116 @@
 ﻿@page
 @model CallAnalysisWeb.Pages.Stats.StatsModel
 @{
-    ViewData["Title"] = "Статистика звонков";
+    ViewData["Title"] = "Аналитика звонков";
 }
 
-<h2>Статистика звонков</h2>
+<h1>@ViewData["Title"]</h1>
 
-<!-- Подключаем библиотеку Chart.js для рисования графиков и диаграмм -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="row">
-    <!-- Первая диаграмма: Суммарная длительность звонков -->
-    <div class="col-md-6">
-        <canvas id="callDurationChart"></canvas>
-    </div>
-
-    <!-- Вторая диаграмма: Наибольшее количество звонков -->
-    <div class="col-md-6">
-        <canvas id="callCountChart"></canvas>
-    </div>
+<!-- Первая диаграмма: Суммарная длительность звонков -->
+<div style="margin-bottom: 20px;">
+    <h2>Суммарная длительность звонков</h2>
+    <canvas id="totalDurationChart"></canvas>
 </div>
 
-<div class="row">
+
+<!-- Вторая диаграмма: Наибольшее количество звонков -->
+<div style="margin-bottom: 20px;">
+    <h2>Наибольшее количество звонков</h2>
+    <canvas id="callCountChart"></canvas>
+</div>
+
+
+<div style="display: flex; margin-bottom: 20px;">
+
     <!-- Третья диаграмма: Принятые / пропущенные звонки -->
-    <div class="col-md-3">
+    <div style="flex: 0.80;">
+        <h2>Принятые / пропущенные звонки</h2>
         <canvas id="callStatusChart"></canvas>
     </div>
 
     <!-- Четвертая диаграмма: Загруженность сотрудников -->
-    <div class="col-md-6">
-        <canvas id="agentLoadChart"></canvas>
+    <div style="flex: 2.20; margin-left: 20px;">
+        <h2>Загруженность сотрудников</h2>
+        <canvas id="supportAgentLoadChart"></canvas>
     </div>
 </div>
 
-<!-- Таблица с информацией о клиентах, не совершавших звонки -->
-<h3>Клиенты, не совершавшие звонков за выбранный период</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Компания</th>
-            <th>Номер телефона</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var client in Model.ClientsWithoutCalls)
-        {
-            <tr>
-                <td>@client.CompanyName</td>
-                <td>@client.PhoneNumber</td>
-            </tr>
-        }
-    </tbody>
-</table>
 
+<!-- Таблица с информацией о клиентах, не совершавших звонки -->
+<div style="margin-bottom: 30px">
+    <h3>Клиенты, не совершавшие звонков за выбранный период</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Компания</th>
+                <th>Номер телефона</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in Model.ClientsWithoutCalls)
+            {
+                <tr>
+                    <td>@client.CompanyName</td>
+                    <td>@client.PhoneNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Данные для первой диаграммы
-        var callDurationData = {
-            labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientsWithLongestCalls.Select(c => c.ClientName))),
+        var totalDurationData = {
+            labels: @Html.Raw(Json.Serialize(Model.ClientsWithLongestCalls.Select(c => c.ClientName))),
             datasets: [{
-                label: 'Суммарная длительность звонков (минуты)',
-                data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientsWithLongestCalls.Select(c => c.TotalDuration))),
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                label: 'Минуты',
+                data: @Html.Raw(Json.Serialize(Model.ClientsWithLongestCalls.Select(c => c.TotalDuration))),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]
         };
 
-        var callDurationConfig = {
+        var callCountData = {
+            labels: @Html.Raw(Json.Serialize(Model.ClientsWithMostCalls.Select(c => c.ClientName))),
+            datasets: [{
+                label: 'Количество звонков',
+                data: @Html.Raw(Json.Serialize(Model.ClientsWithMostCalls.Select(c => c.CallCount))),
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        var callStatusData = {
+            labels: ['Принятые', 'Пропущенные'],
+            datasets: [{
+                label: 'Звонки',
+                data: @Html.Raw(Json.Serialize(new[] { Model.AcceptedCallsCount, Model.MissedCallsCount })),
+                backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                borderWidth: 1
+            }]
+        };
+
+        var supportAgentLoadData = {
+            labels: @Html.Raw(Json.Serialize(Model.SupportAgentLoad.Select(e => e.SupportAgentName))),
+            datasets: [{
+                label: 'Минуты',
+                data: @Html.Raw(Json.Serialize(Model.SupportAgentLoad.Select(e => e.TotalDuration))),
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        var totalDurationCtx = document.getElementById('totalDurationChart').getContext('2d');
+        var totalDurationChart = new Chart(totalDurationCtx, {
             type: 'bar',
-            data: callDurationData,
+            data: totalDurationData,
             options: {
                 scales: {
                     y: {
@@ -79,26 +118,10 @@
                     }
                 }
             }
-        };
+        });
 
-        var callDurationChart = new Chart(
-            document.getElementById('callDurationChart'),
-            callDurationConfig
-        );
-
-        // Данные для второй диаграммы
-        var callCountData = {
-            labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientsWithMostCalls.Select(c => c.ClientName))),
-            datasets: [{
-                label: 'Количество звонков',
-                data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientsWithMostCalls.Select(c => c.CallCount))),
-                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
-        };
-
-        var callCountConfig = {
+        var callCountCtx = document.getElementById('callCountChart').getContext('2d');
+        var callCountChart = new Chart(callCountCtx, {
             type: 'bar',
             data: callCountData,
             options: {
@@ -108,55 +131,18 @@
                     }
                 }
             }
-        };
+        });
 
-        var callCountChart = new Chart(
-            document.getElementById('callCountChart'),
-            callCountConfig
-        );
-
-        // Данные для третьей диаграммы
-        var callStatusData = {
-            labels: ['Принятые', 'Пропущенные'],
-            datasets: [{
-                data: [@Model.AcceptedCallsCount, @Model.MissedCallsCount],
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(255, 159, 64, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        };
-
-        var callStatusConfig = {
+        var callStatusCtx = document.getElementById('callStatusChart').getContext('2d');
+        var callStatusChart = new Chart(callStatusCtx, {
             type: 'pie',
             data: callStatusData
-        };
+        });
 
-        var callStatusChart = new Chart(
-            document.getElementById('callStatusChart'),
-            callStatusConfig
-        );
-
-        // Данные для четвертой диаграммы
-        var agentLoadData = {
-            labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AgentLoad.Select(a => a.SupportAgentName))),
-            datasets: [{
-                label: 'Загруженность сотрудников (минуты)',
-                data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AgentLoad.Select(a => a.TotalDuration))),
-                backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 1
-            }]
-        };
-
-        var agentLoadConfig = {
+        var supportAgentLoadCtx = document.getElementById('supportAgentLoadChart').getContext('2d');
+        var supportAgentLoadChart = new Chart(supportAgentLoadCtx, {
             type: 'bar',
-            data: agentLoadData,
+            data: supportAgentLoadData,
             options: {
                 scales: {
                     y: {
@@ -164,11 +150,6 @@
                     }
                 }
             }
-        };
-
-        var agentLoadChart = new Chart(
-            document.getElementById('agentLoadChart'),
-            agentLoadConfig
-        );
+        });
     </script>
 }
