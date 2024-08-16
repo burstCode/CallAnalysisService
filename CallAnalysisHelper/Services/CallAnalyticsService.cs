@@ -45,34 +45,6 @@ namespace CallAnalysisHelper.Services
 
 
 
-        // Форматирование (нормализация) номера телефона до вида 7XXXXXXXXXX
-        static string FormatPhoneNumber(string phoneNumber /* здесь будет передаваться */)
-        {
-            string cleanedNumber = Regex.Replace(phoneNumber, @"\D", "");
-
-            if (cleanedNumber.Length == 6)
-            {
-                // В этом случае либо помещать в столбец "подозрительный номер",
-                // либо заморочиться и автоматически дописывать по первым двум цифрам ОГРН вроде
-            }
-
-            // Рассматриваем случай, когда одной цифры не хватает, например (4742) 72-67-81
-            if (cleanedNumber.Length == 10 && !cleanedNumber.StartsWith("7"))
-            {
-                cleanedNumber = "7" + cleanedNumber;
-            }
-
-            // Если номер начинается с восьмерки, меняем на семерку
-            if (cleanedNumber.StartsWith("8"))
-            {
-                cleanedNumber = "7" + cleanedNumber.Substring(1);
-            }
-
-            return cleanedNumber;
-        }
-
-
-
 
 
         // Получение клиентов с самыми длинными звонками
@@ -83,27 +55,26 @@ namespace CallAnalysisHelper.Services
                 .Select(client => new
                 {
                     Client = client,
-                    FormatedPhoneNumbers = client.PhoneNumberList
-                        .Select(phone => FormatPhoneNumber(phone)).ToList()
+                    PhoneNumbers = client.PhoneNumberList
                 })
                 .ToList();
 
             return _context.CallRecords
                 .AsEnumerable()
-                .Select(record => new
+                .GroupBy(record =>
                 {
-                    Record = record,
-                    FormatedPhoneNumber = FormatPhoneNumber(record.ClientPhoneNumber)
+                    var client = clients.FirstOrDefault(c => c.PhoneNumbers.Contains(record.Call_ClientPhoneNumber));
+                    return client?.Client.Client_CompanyName ?? record.Call_ClientPhoneNumber;
                 })
-                .GroupBy(r => clients.FirstOrDefault(c => c.FormatedPhoneNumbers.Contains(r.FormatedPhoneNumber))?.Client.CompanyName)
                 .Select(g => new ClientCallDuration
                 {
                     ClientName = g.Key,
-                    TotalDuration = g.Sum(r => r.Record.CallDuration.TotalMinutes)
+                    TotalDuration = g.Sum(r => r.Call_CallDuration.TotalMinutes)
                 })
                 .OrderByDescending(c => c.TotalDuration)
                 .ToList();
         }
+
 
 
 
@@ -116,19 +87,17 @@ namespace CallAnalysisHelper.Services
                 .Select(client => new
                 {
                     Client = client,
-                    FormatedPhoneNumbers = client.PhoneNumberList
-                        .Select(phone => FormatPhoneNumber(phone)).ToList()
+                    PhoneNumbers = client.PhoneNumberList
                 })
                 .ToList();
 
             return _context.CallRecords
                 .AsEnumerable()
-                .Select(record => new
+                .GroupBy(record =>
                 {
-                    Record = record,
-                    FormatedPhoneNumber = FormatPhoneNumber(record.ClientPhoneNumber)
+                    var client = clients.FirstOrDefault(c => c.PhoneNumbers.Contains(record.Call_ClientPhoneNumber));
+                    return client?.Client.Client_CompanyName ?? record.Call_ClientPhoneNumber;
                 })
-                .GroupBy(r => clients.FirstOrDefault(c => c.FormatedPhoneNumbers.Contains(r.FormatedPhoneNumber))?.Client.CompanyName)
                 .Select(g => new ClientCallCount
                 {
                     ClientName = g.Key,
@@ -141,11 +110,12 @@ namespace CallAnalysisHelper.Services
 
 
 
+
         // Статистика принятых и пропущенных звонков
         public CallStatistics GetCallStatistics()
         {
             var totalCalls = _context.CallRecords.Count();
-            var missedCalls = _context.CallRecords.Count(c => c.IsMissed);
+            var missedCalls = _context.CallRecords.Count(c => c.Call_IsMissed);
             var receivedCalls = totalCalls - missedCalls;
 
             return new CallStatistics
@@ -158,12 +128,12 @@ namespace CallAnalysisHelper.Services
 
         public int GetAcceptedCallsCount()
         {
-            return _context.CallRecords.Count(cr => !cr.IsMissed);
+            return _context.CallRecords.Count(cr => !cr.Call_IsMissed);
         }
 
         public int GetMissedCallsCount()
         {
-            return _context.CallRecords.Count(cr => cr.IsMissed);
+            return _context.CallRecords.Count(cr => cr.Call_IsMissed);
         }
 
 
@@ -173,11 +143,11 @@ namespace CallAnalysisHelper.Services
         {
             return _context.CallRecords
                 .AsEnumerable()
-                .GroupBy(c => c.SupportAgentName)
+                .GroupBy(c => c.Call_SupportAgentName)
                 .Select(g => new SupportAgentLoad
                 {
                     SupportAgentName = g.Key,
-                    TotalDuration = g.Sum(c => c.CallDuration.TotalMinutes)
+                    TotalDuration = g.Sum(c => c.Call_CallDuration.TotalMinutes)
                 })
                 .OrderByDescending(c => c.TotalDuration)
                 .ToList();
@@ -190,17 +160,17 @@ namespace CallAnalysisHelper.Services
         {
             var clientsWithCalls = _context.CallRecords
                 .AsEnumerable()
-                .Select(record => FormatPhoneNumber(record.ClientPhoneNumber))
+                .Select(record => record.Call_ClientPhoneNumber)
                 .Distinct()
                 .ToList();
 
             return _context.Clients
                 .AsEnumerable()
-                .Where(client => !client.PhoneNumberList.Any(phone => clientsWithCalls.Contains(FormatPhoneNumber(phone))))
+                .Where(client => !client.PhoneNumberList.Any(phone => clientsWithCalls.Contains(phone)))
                 .Select(client => new ClientWithoutCalls
                 {
-                    CompanyName = client.CompanyName,
-                    PhoneNumber = client.PhoneNumbers
+                    CompanyName = client.Client_CompanyName,
+                    PhoneNumber = client.Client_PhoneNumbers
                 })
                 .ToList();
         }

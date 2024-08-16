@@ -37,12 +37,12 @@ namespace CallAnalysisHelper.Files
                     // Добавляем запись
                     callRecords.Add(new CallRecord
                     {
-                        IsMissed = isMissed,
-                        ClientPhoneNumber = clientPhoneNumber,
-                        SupportAgentName = supportAgentName,
-                        CallDate = callDate,
-                        CallTime = callTime,
-                        CallDuration = callDuration,
+                        Call_IsMissed = isMissed,
+                        Call_ClientPhoneNumber = clientPhoneNumber,
+                        Call_SupportAgentName = supportAgentName,
+                        Call_CallDate = callDate,
+                        Call_CallTime = callTime,
+                        Call_CallDuration = callDuration,
                     });
                 }
             }

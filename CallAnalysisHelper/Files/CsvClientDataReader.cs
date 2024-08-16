@@ -33,11 +33,14 @@ namespace CallAnalysisHelper.Files
                     var companyName = csv.GetField<string>("Название компании");
                     var phoneNumbers = csv.GetField<string>("Рабочий телефон");
 
+                    var formatedPhoneNumbers = string.Join(",", phoneNumbers.Split(',')
+                                            .Select(phone => PhoneNumberParser.NormalizePhoneNumber(phone.Trim())));
+
                     clients.Add(new Client
                     {
-                        Id = id,
-                        CompanyName = companyName,
-                        PhoneNumbers = phoneNumbers
+                        Client_Id = id,
+                        Client_CompanyName = companyName,
+                        Client_PhoneNumbers = formatedPhoneNumbers
                     });
                 }
             }
