@@ -18,6 +18,13 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
+// Создание базы данных и таблиц, если они отсутствуют
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.EnsureCreated();
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

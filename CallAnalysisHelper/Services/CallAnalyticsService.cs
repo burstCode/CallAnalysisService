@@ -11,6 +11,7 @@ namespace CallAnalysisHelper.Services
         private readonly ExcelCallDataReader _excelReader;
         private readonly CsvClientDataReader _csvReader;
 
+
         public CallAnalyticsService(ApplicationDbContext context, ExcelCallDataReader excelReader, CsvClientDataReader csvReader)
         {
             _context = context;
@@ -22,28 +23,17 @@ namespace CallAnalysisHelper.Services
         }
 
 
-
-
-
         public void ImportData(string callDataFilePath, string clientDataFilePath)
         {
             callDataFilePath = "C:\\Users\\mikex\\Downloads\\Istoria_vneshnikh_zvonkov_12-08-2024.xlsx";
             clientDataFilePath = "C:\\Users\\mikex\\Downloads\\amocrm_export_companies_2024-08-12_1.csv";
 
-            // Чтение данных о звонках
-            var callRecords = _excelReader.ReadCallDataFromExcel(callDataFilePath);
-
-            // Чтение данных о клиентах
+            var calls = _excelReader.ReadCallDataFromExcel(callDataFilePath);
             var clients = _csvReader.ReadClientDataFromCsv(clientDataFilePath);
 
-            // Сохранение данных в базу
-            _context.CallRecords.AddRange(callRecords);
-            _context.Clients.AddRange(clients);
-            _context.SaveChanges();
+            _context.ImportCallRecords(calls);
+            _context.ImportClients(clients);
         }
-
-
-
 
 
 
@@ -69,13 +59,11 @@ namespace CallAnalysisHelper.Services
                 .Select(g => new ClientCallDuration
                 {
                     ClientName = g.Key,
-                    TotalDuration = g.Sum(r => r.Call_CallDuration.TotalMinutes)
+                    TotalDuration = g.Sum(r => r.Call_Duration.TotalMinutes)
                 })
                 .OrderByDescending(c => c.TotalDuration)
                 .ToList();
         }
-
-
 
 
 
@@ -106,8 +94,6 @@ namespace CallAnalysisHelper.Services
                 .OrderByDescending(c => c.CallCount)
                 .ToList();
         }
-
-
 
 
 
@@ -147,7 +133,7 @@ namespace CallAnalysisHelper.Services
                 .Select(g => new SupportAgentLoad
                 {
                     SupportAgentName = g.Key,
-                    TotalDuration = g.Sum(c => c.Call_CallDuration.TotalMinutes)
+                    TotalDuration = g.Sum(c => c.Call_Duration.TotalMinutes)
                 })
                 .OrderByDescending(c => c.TotalDuration)
                 .ToList();
@@ -174,7 +160,5 @@ namespace CallAnalysisHelper.Services
                 })
                 .ToList();
         }
-
-
     }
 }

@@ -36,11 +36,16 @@ namespace CallAnalysisHelper.Files
                     var formatedPhoneNumbers = string.Join(",", phoneNumbers.Split(',')
                                             .Select(phone => PhoneNumberParser.NormalizePhoneNumber(phone.Trim())));
 
+                    var inn = csv.GetField<string>("ИНН");
+                    var ogrn = csv.GetField<string>("ОГРН");
+
                     clients.Add(new Client
                     {
                         Client_Id = id,
                         Client_CompanyName = companyName,
-                        Client_PhoneNumbers = formatedPhoneNumbers
+                        Client_PhoneNumbers = formatedPhoneNumbers,
+                        Client_INN = inn,
+                        Client_OGRN = ogrn
                     });
                 }
             }

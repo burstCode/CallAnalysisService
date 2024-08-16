@@ -28,9 +28,13 @@ namespace CallAnalysisHelper.Files
 
                     var supportAgentName = worksheet.Cells[row, 3].Text;
 
+                    var throughPhoneNumber = worksheet.Cells[row, 5].Text;
+
                     var callDate = DateTime.Parse(worksheet.Cells[row, 8].Text);
 
                     var callTime = DateTime.Parse(worksheet.Cells[row, 9].Text);
+
+                    var callWaitingTime = TimeSpan.Parse(worksheet.Cells[row, 10].Text);
 
                     var callDuration = TimeSpan.Parse(worksheet.Cells[row, 11].Text);
 
@@ -40,9 +44,11 @@ namespace CallAnalysisHelper.Files
                         Call_IsMissed = isMissed,
                         Call_ClientPhoneNumber = clientPhoneNumber,
                         Call_SupportAgentName = supportAgentName,
-                        Call_CallDate = callDate,
-                        Call_CallTime = callTime,
-                        Call_CallDuration = callDuration,
+                        Call_ThroughPhoneNumber = throughPhoneNumber,
+                        Call_Date = callDate,
+                        Call_Time = callTime,
+                        Call_WaitingTime = callWaitingTime,
+                        Call_Duration = callDuration,
                     });
                 }
             }
