@@ -34,10 +34,4 @@ namespace CallAnalysisWeb.Pages.Stats
             ClientsWithoutCalls = _analyticsService.GetClientsWithoutCalls();
         }
     }
-
-    public class ClientWithoutCalls
-    {
-        public string CompanyName { get; set; }
-        public string PhoneNumber { get; set; }
-    }
 }

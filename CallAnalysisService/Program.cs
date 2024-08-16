@@ -2,10 +2,13 @@ using Microsoft.EntityFrameworkCore;
 
 using CallAnalysisHelper.Database;
 using CallAnalysisHelper.Services;
+using CallAnalysisHelper.Files;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<CallAnalyticsService>();
+builder.Services.AddScoped<ExcelCallDataReader>();
+builder.Services.AddScoped<CsvClientDataReader>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
