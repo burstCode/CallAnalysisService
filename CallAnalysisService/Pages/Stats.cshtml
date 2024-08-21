@@ -37,6 +37,13 @@
 </div>
 
 
+<!-- Пятая диаграмма: Статистика времени ожидания -->
+<h2>Статистика времени ожидания</h2>
+<div style="width: 60%; height: 350px; margin: auto;">
+    <canvas id="waitingTimeChart"></canvas>
+</div>
+
+
 <!-- Таблица с информацией о клиентах, не совершавших звонки -->
 <div style="margin-bottom: 30px">
     <h3>Клиенты, не совершавшие звонков за выбранный период</h3>
@@ -84,8 +91,6 @@
                 borderWidth: 1
             }]
         };
-
-        var callTypeData = @Json.Serialize(Model.CallTypeDistribution);
         
         var supportAgentLoadData = {
             labels: @Html.Raw(Json.Serialize(Model.SupportAgentLoad.Select(e => e.SupportAgentName))),
@@ -97,6 +102,12 @@
                 borderWidth: 1
             }]
         };
+
+        var callTypeData = @Json.Serialize(Model.CallTypeDistribution);
+
+        var waitingTimeData = @Json.Serialize(Model.WaitingTimeStatistics);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
 
         var totalDurationCtx = document.getElementById('totalDurationChart').getContext('2d');
         var totalDurationChart = new Chart(totalDurationCtx, {
@@ -176,6 +187,42 @@
                 scales: {
                     y: {
                         beginAtZero: true
+                    }
+                }
+            }
+        });
+
+
+        var waitingTimeCtx = document.getElementById('waitingTimeChart').getContext('2d');
+        var waitingTimeChart = new Chart(waitingTimeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Среднее время ожидания', 'Максимальное время ожидания', 'Минимальное время ожидания'],
+                datasets: [{
+                    label: 'Время ожидания (в секундах)',
+                    data: Object.values(waitingTimeData),
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.3)',
+                        'rgba(255, 99, 132, 0.3)',
+                        'rgba(54, 162, 235, 0.3)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
                     }
                 }
             }

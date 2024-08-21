@@ -150,5 +150,30 @@ namespace CallAnalysisHelper.Services
                 })
                 .ToList();
         }
+
+
+
+        // Статистика по времени ожидания :D
+        public WaitingTimeStatistics GetWaitingTimeStatistics()
+        {
+            List<TimeSpan> waitingTimes = _context.CallRecords
+                .AsEnumerable()
+                .Select(record => record.Call_WaitingTime)
+                .ToList();
+
+            return new WaitingTimeStatistics
+            {
+                AverageWaitingTime = CalculateAverageWaitingTime(waitingTimes),
+                MaxWaitingTime = waitingTimes.Max().TotalSeconds,
+                MinWaitingTime = waitingTimes.Min().TotalSeconds
+            };
+        }
+
+        public double CalculateAverageWaitingTime(List<TimeSpan> waitingTimes)
+        {
+            double totalSeconds = waitingTimes.Sum(time => time.TotalSeconds);
+
+            return totalSeconds / waitingTimes.Count;
+        }
     }
 }
