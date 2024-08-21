@@ -58,7 +58,7 @@ namespace CallAnalysisHelper.Services
                 })
                 .Select(g => new ClientCallDuration
                 {
-                    ClientName = g.Key,
+                    CompanyName = g.Key,
                     TotalDuration = g.Sum(r => r.Call_Duration.TotalMinutes)
                 })
                 .OrderByDescending(c => c.TotalDuration)
@@ -88,7 +88,7 @@ namespace CallAnalysisHelper.Services
                 })
                 .Select(g => new ClientCallCount
                 {
-                    ClientName = g.Key,
+                    CompanyName = g.Key,
                     CallCount = g.Count()
                 })
                 .OrderByDescending(c => c.CallCount)
@@ -97,30 +97,20 @@ namespace CallAnalysisHelper.Services
 
 
 
-        // Статистика принятых и пропущенных звонков
-        public CallStatistics GetCallStatistics()
+        // Распределение звонкам по типам
+        public Dictionary<string, int> GetCallTypeDistribution()
         {
-            var totalCalls = _context.CallRecords.Count();
-            var missedCalls = _context.CallRecords.Count(c => c.Call_IsMissed);
-            var receivedCalls = totalCalls - missedCalls;
-
-            return new CallStatistics
-            {
-                TotalCalls = totalCalls,
-                MissedCalls = missedCalls,
-                ReceivedCalls = receivedCalls
-            };
+            return _context.CallRecords
+                .AsEnumerable()
+                .GroupBy(c => c.Call_Type)
+                .Select(g => new
+                {
+                    CallType = g.Key,
+                    Count = g.Count()
+                })
+                .ToDictionary(k => k.CallType, v => v.Count);
         }
-
-        public int GetAcceptedCallsCount()
-        {
-            return _context.CallRecords.Count(cr => !cr.Call_IsMissed);
-        }
-
-        public int GetMissedCallsCount()
-        {
-            return _context.CallRecords.Count(cr => cr.Call_IsMissed);
-        }
+        
 
 
 

@@ -96,6 +96,8 @@ namespace CallAnalysisHelper.Database
                     }
 
                     SaveChanges();
+
+                    transaction.Commit();
                 }
                 catch
                 {

@@ -2,7 +2,7 @@
 {
     public class ClientCallCount
     {
-        public string ClientName { get; set; }
+        public string CompanyName { get; set; }
         public int CallCount { get; set; }
     }
 }

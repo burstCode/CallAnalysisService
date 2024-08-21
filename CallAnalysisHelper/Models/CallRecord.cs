@@ -8,7 +8,7 @@ namespace CallAnalysisHelper.Models
         public int Call_Id { get; set; }
 
 
-        public bool Call_IsMissed { get; set; }
+        public string Call_Type { get; set; }
 
         public string Call_ClientPhoneNumber { get; set; }
         

@@ -23,9 +23,9 @@
 
 <div style="display: flex; margin-bottom: 20px;">
 
-    <!-- Третья диаграмма: Принятые / пропущенные звонки -->
+    <!-- Третья диаграмма: Статистика звонков -->
     <div style="flex: 0.80;">
-        <h2>Принятые / пропущенные звонки</h2>
+        <h2>Статистика звонков</h2>
         <canvas id="callStatusChart"></canvas>
     </div>
 
@@ -64,7 +64,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var totalDurationData = {
-            labels: @Html.Raw(Json.Serialize(Model.ClientsWithLongestCalls.Select(c => c.ClientName))),
+            labels: @Html.Raw(Json.Serialize(Model.ClientsWithLongestCalls.Select(c => c.CompanyName))),
             datasets: [{
                 label: 'Минуты',
                 data: @Html.Raw(Json.Serialize(Model.ClientsWithLongestCalls.Select(c => c.TotalDuration))),
@@ -75,7 +75,7 @@
         };
 
         var callCountData = {
-            labels: @Html.Raw(Json.Serialize(Model.ClientsWithMostCalls.Select(c => c.ClientName))),
+            labels: @Html.Raw(Json.Serialize(Model.ClientsWithMostCalls.Select(c => c.CompanyName))),
             datasets: [{
                 label: 'Количество звонков',
                 data: @Html.Raw(Json.Serialize(Model.ClientsWithMostCalls.Select(c => c.CallCount))),
@@ -85,17 +85,8 @@
             }]
         };
 
-        var callStatusData = {
-            labels: ['Принятые', 'Пропущенные'],
-            datasets: [{
-                label: 'Звонки',
-                data: @Html.Raw(Json.Serialize(new[] { Model.AcceptedCallsCount, Model.MissedCallsCount })),
-                backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
-                borderWidth: 1
-            }]
-        };
-
+        var callTypeData = @Json.Serialize(Model.CallTypeDistribution);
+        
         var supportAgentLoadData = {
             labels: @Html.Raw(Json.Serialize(Model.SupportAgentLoad.Select(e => e.SupportAgentName))),
             datasets: [{
@@ -133,10 +124,34 @@
             }
         });
 
-        var callStatusCtx = document.getElementById('callStatusChart').getContext('2d');
-        var callStatusChart = new Chart(callStatusCtx, {
+        var callTypeCtx = document.getElementById('callStatusChart').getContext('2d');
+        var callTypeChart = new Chart(callTypeCtx, {
             type: 'pie',
-            data: callStatusData
+            data: {
+                labels: Object.keys(callTypeData),
+                datasets: [{
+                    data: Object.values(callTypeData),
+                    backgroundColor: Object.keys(callTypeData).map(type => {
+                        if (type === "пропущенный") {
+                            return 'rgba(255, 99, 132, 0.2)';  // Красный
+                        }
+                        else if (type === "неуспешный исходящий") {
+                            return 'rgba(61, 46, 53, 0.2)';  // Серый
+                        }
+                        return 'rgba(54, 162, 235, 0.2)';  // Синий
+                    }),
+                    borderColor: Object.keys(callTypeData).map(type => {
+                        if (type === "пропущенный") {
+                            return 'rgba(255, 99, 132, 1)';  // Красный
+                        }
+                        else if (type === "неуспешный исходящий") {
+                            return 'rgba(61, 46, 53, 0.58)'; // Серый
+                        }
+                        return 'rgba(54, 162, 235, 1)';  // Синий
+                    }),
+                    borderWidth: 1
+                }]
+            },
         });
 
         var supportAgentLoadCtx = document.getElementById('supportAgentLoadChart').getContext('2d');

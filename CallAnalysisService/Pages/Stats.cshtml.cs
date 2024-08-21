@@ -12,9 +12,8 @@ namespace CallAnalysisWeb.Pages.Stats
 
         public List<ClientCallDuration> ClientsWithLongestCalls { get; set; }
         public List<ClientCallCount> ClientsWithMostCalls { get; set; }
-        public int AcceptedCallsCount { get; set; }
-        public int MissedCallsCount { get; set; }
         public List<SupportAgentLoad> SupportAgentLoad { get; set; }
+        public Dictionary<string, int> CallTypeDistribution { get; set; }
 
         // Пока что пришлось явно указать, так как видит такой же класс в страницах разор
         public List<ClientWithoutCalls> ClientsWithoutCalls { get; set; }
@@ -28,10 +27,9 @@ namespace CallAnalysisWeb.Pages.Stats
         {
             ClientsWithLongestCalls = _analyticsService.GetClientsWithLongestCalls();
             ClientsWithMostCalls = _analyticsService.GetClientsWithMostCalls();
-            AcceptedCallsCount = _analyticsService.GetAcceptedCallsCount();
-            MissedCallsCount = _analyticsService.GetMissedCallsCount();
             SupportAgentLoad = _analyticsService.GetSupportAgentLoad();
             ClientsWithoutCalls = _analyticsService.GetClientsWithoutCalls();
+            CallTypeDistribution = _analyticsService.GetCallTypeDistribution();
         }
     }
 }

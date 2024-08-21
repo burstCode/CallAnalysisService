@@ -2,7 +2,7 @@
 {
     public class ClientCallDuration
     {
-        public string ClientName { get; set; }
+        public string CompanyName { get; set; }
         public double TotalDuration { get; set; }
     }
 }

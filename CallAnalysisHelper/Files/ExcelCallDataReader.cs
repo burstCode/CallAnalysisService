@@ -22,7 +22,7 @@ namespace CallAnalysisHelper.Files
                 // Пропускаем ненужные строки и идем до последней строки листа
                 for (int row = 11; row <= worksheet.Dimension.Rows; row++)
                 {
-                    var isMissed = worksheet.Cells[row, 1].Text == "пропущенный" ? true : false;
+                    var isMissed = worksheet.Cells[row, 1].Text;
 
                     var clientPhoneNumber = worksheet.Cells[row, 2].Text;
 
@@ -41,7 +41,7 @@ namespace CallAnalysisHelper.Files
                     // Добавляем запись
                     callRecords.Add(new CallRecord
                     {
-                        Call_IsMissed = isMissed,
+                        Call_Type = isMissed,
                         Call_ClientPhoneNumber = clientPhoneNumber,
                         Call_SupportAgentName = supportAgentName,
                         Call_ThroughPhoneNumber = throughPhoneNumber,
