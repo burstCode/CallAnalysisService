@@ -4,19 +4,19 @@
     ViewData["Title"] = "Аналитика звонков";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 align="center">@ViewData["Title"]</h1>
 
 
 <!-- Первая диаграмма: Суммарная длительность звонков -->
 <div style="margin-bottom: 20px;">
-    <h2>Суммарная длительность звонков</h2>
+    <h2 align="center">Суммарная длительность звонков</h2>
     <canvas id="totalDurationChart"></canvas>
 </div>
 
 
 <!-- Вторая диаграмма: Наибольшее количество звонков -->
 <div style="margin-bottom: 20px;">
-    <h2>Наибольшее количество звонков</h2>
+    <h2 align="center">Наибольшее количество звонков</h2>
     <canvas id="callCountChart"></canvas>
 </div>
 
@@ -25,20 +25,20 @@
 
     <!-- Третья диаграмма: Статистика звонков -->
     <div style="flex: 0.80;">
-        <h2>Статистика звонков</h2>
+        <h2 align="center">Статистика звонков</h2>
         <canvas id="callStatusChart"></canvas>
     </div>
 
     <!-- Четвертая диаграмма: Загруженность сотрудников -->
     <div style="flex: 2.20; margin-left: 20px;">
-        <h2>Загруженность сотрудников</h2>
+        <h2 align="center">Загруженность сотрудников</h2>
         <canvas id="supportAgentLoadChart"></canvas>
     </div>
 </div>
 
 
 <!-- Пятая диаграмма: Статистика времени ожидания -->
-<h2>Статистика времени ожидания</h2>
+<h2 align="center">Статистика времени ожидания</h2>
 <div style="width: 60%; height: 350px; margin: auto;">
     <canvas id="waitingTimeChart"></canvas>
 </div>
@@ -46,7 +46,7 @@
 
 <!-- Таблица с информацией о клиентах, не совершавших звонки -->
 <div style="margin-bottom: 30px">
-    <h3>Клиенты, не совершавшие звонков за выбранный период</h3>
+    <h3 align="center">Клиенты, не совершавшие звонков за выбранный период</h3>
     <table class="table">
         <thead>
             <tr>
