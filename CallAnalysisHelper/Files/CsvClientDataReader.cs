@@ -33,6 +33,27 @@ namespace CallAnalysisHelper.Files
                     var companyName = csv.GetField<string>("Название компании");
                     var phoneNumbers = csv.GetField<string>("Рабочий телефон");
 
+                    // Проверяем другие поля, в которых могут оказаться еще номера телефонов
+                    // если есть, то добавляем к существующему списку
+                    string[] otherPhoneNumberFields = { 
+                        "Рабочий прямой телефон",
+                        "Мобильный телефон",
+                        "Факс",
+                        "Домашний телефон",
+                        "Другой телефон" 
+                    };
+
+                    for (int i = 0; i < otherPhoneNumberFields.Length; i++)
+                    {
+                        string? currentField = csv.GetField<string>(otherPhoneNumberFields[i]);
+
+                        if (!string.IsNullOrEmpty(currentField))
+                        {
+                            phoneNumbers += $",{csv.GetField<string>(otherPhoneNumberFields[i])}";
+                        }
+                    }
+                    
+
                     var formatedPhoneNumbers = string.Join(",", phoneNumbers.Split(',')
                                             .Select(phone => PhoneNumberParser.NormalizePhoneNumber(phone.Trim())));
 
